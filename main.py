@@ -1,13 +1,14 @@
 #The making of GUI of the application is done in this file. The main window of the application is created here.
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QVBoxLayout, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setGeometry(700, 400, 500, 500)
+        self.setFixedSize(500, 500)
+        self.setWindowTitle("Chess Game")
 
 def main():
     app = QApplication(sys.argv)
