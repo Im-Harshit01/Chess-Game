@@ -2,13 +2,8 @@
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
+from window import MainWindow
 
-
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.setFixedSize(500, 500)
-        self.setWindowTitle("Chess Game")
 
 def main():
     app = QApplication(sys.argv)
