@@ -1,15 +1,23 @@
 #This handels the main window of the application 
+
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame
 
 
+class piece:
+    def __init__(self, name, color):
+        self.name = name
+        self.color = color
+
 class Square(QFrame):
     clicked = pyqtSignal(int, int)
 
-    def __init__(self, row, col):     # This represents a square on the chessboard, with its row and column indices.
+    def __init__(self, row, col, color):     # This represents a square on the chessboard, with its row and column indices.
         super().__init__()
         self.row = row
         self.col = col
+        self.color = color
+        self.piece = None
 
     def mousePressEvent(self, event):   #If the square is clicked, it emits a signal with its row and column indices.
         self.clicked.emit(self.row, self.col)
@@ -34,17 +42,27 @@ class MainWindow(QMainWindow):
         self.central_widget.setLayout(self.grid)
 
         self.squares = []
+        self.selected_square = None
+        self.selected_piece = None
+
 
         for row in range(8):
             row_list = []
 
             for col in range(8):
-                square = Square(row, col)
 
                 if (row + col) % 2 == 0:
-                    square.setStyleSheet("background-color: white;")
+                    color = "white"
+                    if row == 1:
+                        square.piece = piece("pawn", "black")
+                    elif row == 6:
+                        square.piece = piece("pawn", "white")
                 else:
-                    square.setStyleSheet("background-color: black;")
+                    color = "black"
+
+
+                square = Square(row, col, color)
+                square.setStyleSheet(f"background-color: {square.color};")
 
                 square.clicked.connect(self.on_square_clicked)
 
@@ -54,4 +72,12 @@ class MainWindow(QMainWindow):
             self.squares.append(row_list)
 
     def on_square_clicked(self, row, col):
-        print(f"Clicked: {row}, {col}")
+        square = self.squares[row][col]
+
+        if self.selected_square is not None:
+            self.selected_square.setStyleSheet(
+                f"background-color: {self.selected_square.color};"
+            )
+
+        self.selected_square = square
+        self.selected_square.setStyleSheet("background-color: #b8b6b6;")
