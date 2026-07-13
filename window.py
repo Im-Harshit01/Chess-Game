@@ -2,6 +2,7 @@
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QGraphicsDropShadowEffect
+from numpy import square
 
 from piece import Piece
 
@@ -65,7 +66,6 @@ class MainWindow(QMainWindow):
 
         self.squares = []
         self.selected_square = None
-        self.selected_piece = None
 
 
         for row in range(8):
@@ -81,10 +81,10 @@ class MainWindow(QMainWindow):
                 square = Square(row, col, color)
 
                 if row == 1:
-                    pawn = Piece("pawn", "grey")
+                    pawn = Piece("black")
                     square.piece = pawn
                 elif row == 6:
-                    pawn = Piece("pawn", "white")
+                    pawn = Piece("white")
                     square.piece = pawn
 
                 square.update_display()
@@ -101,10 +101,34 @@ class MainWindow(QMainWindow):
     def on_square_clicked(self, row, col):
         square = self.squares[row][col]
 
-        if self.selected_square is not None:
-            self.selected_square.setStyleSheet(
-                f"background-color: {self.selected_square.color};"
-            )
+        #First Click
 
-        self.selected_square = square
-        self.selected_square.setStyleSheet("background-color: #b8b6b6;")
+        if self.selected_square is None:
+            if square.piece is not None:
+                self.selected_square = square
+                self.selected_square.setStyleSheet("background-color: #b8b6b6;")
+            return
+
+        #Second Click
+
+        if square.piece is not None:
+            if square.piece.color == self.selected_square.piece.color:
+                self.selected_square.setStyleSheet(
+                    f"background-color: {self.selected_square.color};"
+                )
+
+                self.selected_square = square
+                self.selected_square.setStyleSheet("background-color: #b8b6b6;")
+
+                return
+
+        square.piece = self.selected_square.piece
+        self.selected_square.piece = None
+
+        square.update_display()
+        self.selected_square.update_display()
+
+        self.selected_square.setStyleSheet(
+            f"background-color: {self.selected_square.color};"
+        )
+        self.selected_square = None
