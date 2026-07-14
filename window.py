@@ -2,9 +2,8 @@
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QGraphicsDropShadowEffect
-from numpy import square
 
-from piece import Piece
+from piece import Pawn
 
 
 class Square(QFrame):
@@ -31,12 +30,7 @@ class Square(QFrame):
     def update_display(self):   #This updates the display of the square based on the piece it contains.
 
         if self.piece is not None:
-            if self.piece.color == "white":
-                # Show ♙
-                self.label.setText("♙")
-            else:
-                # Show ♟
-                self.label.setText("♟")
+            self.label.setText(self.piece.symbol)        
         else:
             self.label.setText("")
 
@@ -81,11 +75,9 @@ class MainWindow(QMainWindow):
                 square = Square(row, col, color)
 
                 if row == 1:
-                    pawn = Piece("black")
-                    square.piece = pawn
+                    square.piece = Pawn("black")
                 elif row == 6:
-                    pawn = Piece("white")
-                    square.piece = pawn
+                    square.piece = Pawn("white")
 
                 square.update_display()
 
