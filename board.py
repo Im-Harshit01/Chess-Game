@@ -1,4 +1,4 @@
-
+from piece import Pawn, Rook, Knight, Bishop, Queen, King
 
 
 class Board:
@@ -9,11 +9,15 @@ class Board:
 
     def setup_pieces(self):
         # Place all pieces in their starting positions.
-        pass
+        pieces = [Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook]
+
+        for col in range(8):
+            self.get_square(1, col).piece = pawn("black")
+            self.get_square(6, col).piece = pawn("white")
 
     def get_square(self, row, col):
         # Return the square at the given position.
-        pass
+        return self.squares[row][col]
 
     def move_piece(self, start_row, start_col, end_row, end_col):
         # Move a piece if the move is legal.
