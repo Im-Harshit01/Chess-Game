@@ -3,8 +3,8 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QGraphicsDropShadowEffect
 
-from piece import Pawn
-
+from piece import Piece
+from board import Board
 
 class Square(QFrame):
     clicked = pyqtSignal(int, int)
@@ -58,8 +58,7 @@ class MainWindow(QMainWindow):
         self.grid.setSpacing(0)
         self.central_widget.setLayout(self.grid)
 
-        self.squares = []
-        self.selected_square = None
+        self.board = Board()
 
 
         for row in range(8):
@@ -74,11 +73,6 @@ class MainWindow(QMainWindow):
 
                 square = Square(row, col, color)
 
-                if row == 1:
-                    square.piece = Pawn("black")
-                elif row == 6:
-                    square.piece = Pawn("white")
-
                 square.update_display()
 
                 square.setStyleSheet(f"background-color: {square.color};")
@@ -88,39 +82,51 @@ class MainWindow(QMainWindow):
                 self.grid.addWidget(square, row, col)
                 row_list.append(square)
 
-            self.squares.append(row_list)
+            self.board.squares.append(row_list)
+
+        self.board.setup_pieces()
+
+        for row in self.board.squares:
+            for square in row:
+                square.update_display()
 
     def on_square_clicked(self, row, col):
-        square = self.squares[row][col]
+        square = self.board.get_square(row, col)
 
-        #First Click
-
-        if self.selected_square is None:
+        if self.board.selected_square is None:
             if square.piece is not None:
-                self.selected_square = square
-                self.selected_square.setStyleSheet("background-color: #b8b6b6;")
-            return
-
-        #Second Click
-
-        if square.piece is not None:
-            if square.piece.color == self.selected_square.piece.color:
-                self.selected_square.setStyleSheet(
-                    f"background-color: {self.selected_square.color};"
+                self.board.select_square(row, col)
+                self.board.selected_square.setStyleSheet(
+                    "background-color: #b8b6b6;"
                 )
+            return
+        
+        selected = self.board.selected_square
 
-                self.selected_square = square
-                self.selected_square.setStyleSheet("background-color: #b8b6b6;")
+        selected = self.board.selected_square
 
-                return
+        if (
+            square.piece is not None and
+            square.piece.color == selected.piece.color
+        ):
+            selected.setStyleSheet(
+                f"background-color: {selected.color};"
+            )
 
-        square.piece = self.selected_square.piece
-        self.selected_square.piece = None
+            self.board.select_square(row, col)
 
-        square.update_display()
-        self.selected_square.update_display()
+            self.board.selected_square.setStyleSheet(
+                "background-color: #b8b6b6;"
+            )
 
-        self.selected_square.setStyleSheet(
-            f"background-color: {self.selected_square.color};"
-        )
-        self.selected_square = None
+            return
+        
+        if self.board.move_piece(
+            selected.row,
+            selected.col,
+            row,
+            col
+        ):
+            for row in self.board.squares:
+                for square in row:
+                    square.update_display()
