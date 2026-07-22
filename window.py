@@ -3,7 +3,6 @@
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QGraphicsDropShadowEffect
 
-from piece import Piece
 from board import Board
 
 class Square(QFrame):
@@ -86,15 +85,17 @@ class MainWindow(QMainWindow):
 
         self.board.setup_pieces()
 
-        for row in self.board.squares:
-            for square in row:
+        for row_squares in self.board.squares:
+            for square in row_squares:
                 square.update_display()
 
     def on_square_clicked(self, row, col):
         square = self.board.get_square(row, col)
 
         if self.board.selected_square is None:
-            if square.piece is not None:
+            if (square.piece is not None and 
+            square.piece.color == self.board.turn
+            ):
                 self.board.select_square(row, col)
                 self.board.selected_square.setStyleSheet(
                     "background-color: #b8b6b6;"
@@ -103,12 +104,10 @@ class MainWindow(QMainWindow):
         
         selected = self.board.selected_square
 
-        selected = self.board.selected_square
-
         if (
             square.piece is not None and
             square.piece.color == selected.piece.color
-        ):
+            ):
             selected.setStyleSheet(
                 f"background-color: {selected.color};"
             )
@@ -127,6 +126,12 @@ class MainWindow(QMainWindow):
             row,
             col
         ):
-            for row in self.board.squares:
-                for square in row:
+            for row_squares in self.board.squares:
+                for square in row_squares:
                     square.update_display()
+            
+            selected.setStyleSheet(
+                f"background-color: {selected.color};"
+            )
+
+            self.board.deselect_square()

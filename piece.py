@@ -5,7 +5,9 @@ class Piece(ABC):
     def __init__(self, color):
         self._color = color
         self.has_moved = False
-
+                                                # Base class shared by all chess pieces.
+                                                # Stores common attributes such as color and movement state.
+                                                    
     @property
     def color(self):
         return self._color
@@ -191,10 +193,10 @@ class Queen(Piece):
         rook = Rook(self.color)
         bishop = Bishop(self.color)
 
-        if rook.is_valid_move(self, board, start_row, start_col, end_row, end_col):
+        if rook.is_valid_move(board, start_row, start_col, end_row, end_col):
             return True
         
-        if bishop.is_valid_move(self, board, start_row, start_col, end_row, end_col):
+        if bishop.is_valid_move(board, start_row, start_col, end_row, end_col):
             return True
         
         return False
