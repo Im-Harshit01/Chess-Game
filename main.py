@@ -1,7 +1,7 @@
 #The making of GUI of the application is done in this file. The main window of the application is created here.
 
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication
 from window import MainWindow
 
 
