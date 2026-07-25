@@ -1,8 +1,7 @@
 #This handels the main window of the application 
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QGraphicsDropShadowEffect
-
+from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout
 from board import Board
 
 class Square(QFrame):
@@ -89,7 +88,7 @@ class MainWindow(QMainWindow):
             for square in row_squares:
                 square.update_display()
 
-    def on_square_clicked(self, row, col):
+    def on_square_clicked(self, row, col):sss
         square = self.board.get_square(row, col)
 
         if self.board.selected_square is None:
