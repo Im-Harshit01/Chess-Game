@@ -1,4 +1,5 @@
 from piece import Pawn, Rook, Knight, Bishop, Queen, King
+import piece
 
 
 class Board:
@@ -51,12 +52,21 @@ class Board:
         ):
             return False
         
-        end_square.piece = piece
+        captured_piece = end_square.piece
+
+        # Move temporarily
         start_square.piece = None
-        piece.has_moved = True
+        end_square.piece = piece
 
+        # Look for check after the move
+        if self.is_in_check(piece.color):
+            start_square.piece = piece          #Undo the move
+            end_square.piece = captured_piece
+            return False
+
+        # Move is valid, finalize it
         self.switch_turn()
-
+        piece.has_moved = True
         return True
 
 
@@ -77,7 +87,27 @@ class Board:
 
     def is_in_check(self, color):
         # Return True if the given color is in check.
-        pass
+        king_square = None
+
+        for row in self.squares:
+            for square in row:
+                piece = square.piece
+                if piece is not None and isinstance(piece, King) and piece.color == color:
+                    king_square = square
+                    break
+
+            if king_square is not None:
+                    break
+
+        for row in range(8):
+            for col in range(8):
+                square = self.get_square(row, col)
+                piece = square.piece
+                if piece is not None and piece.color != color:
+                    if piece.is_valid_move(self, row, col, king_square.row, king_square.col):
+                        return True        
+        return False
+
 
     def is_checkmate(self, color):
         # Return True if the given color is checkmated.
