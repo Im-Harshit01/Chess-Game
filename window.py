@@ -88,7 +88,7 @@ class MainWindow(QMainWindow):
             for square in row_squares:
                 square.update_display()
 
-    def on_square_clicked(self, row, col):sss
+    def on_square_clicked(self, row, col):
         square = self.board.get_square(row, col)
 
         if self.board.selected_square is None:
