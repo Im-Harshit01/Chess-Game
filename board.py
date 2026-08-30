@@ -7,6 +7,8 @@ class Board:
         self.squares = []
         self.selected_square = None
         self.turn = "white"
+        self.game_over = False
+        self.winner = None
         
     def setup_pieces(self):
         # Place all pieces in their starting positions.
@@ -25,6 +27,10 @@ class Board:
         return self.squares[row][col]
 
     def move_piece(self, start_row, start_col, end_row, end_col):
+        # Stops the game if checkmate is detected after a move.
+        if self.game_over:
+            return False
+        
         # Move a piece if the move is legal.
         start_square = self.get_square(start_row, start_col)
         end_square = self.get_square(end_row, end_col)
@@ -65,8 +71,13 @@ class Board:
             return False
 
         # Move is valid, finalize it
-        self.switch_turn()
         piece.has_moved = True
+        self.switch_turn()
+
+        if self.is_checkmate(self.turn):
+            self.game_over = True
+            self.winner = piece.color
+
         return True
 
 
@@ -111,4 +122,41 @@ class Board:
 
     def is_checkmate(self, color):
         # Return True if the given color is checkmated.
-        pass
+
+        if not self.is_in_check(color):
+            return False
+
+        for row in range(8):
+            for col in range(8):
+                piece = self.get_square(row, col).piece
+
+                if piece is None or piece.color != color:
+                    continue
+
+                for end_row in range(8):
+                    for end_col in range(8):
+
+                        if not piece.is_valid_move(
+                            self, row, col, end_row, end_col
+                        ):
+                            continue
+
+                        destination = self.get_square(end_row, end_col)
+
+                        if destination.piece is not None and destination.piece.color == color:
+                            continue
+
+                        captured = destination.piece
+
+                        self.get_square(row, col).piece = None
+                        destination.piece = piece
+
+                        safe = not self.is_in_check(color)
+
+                        self.get_square(row, col).piece = piece
+                        destination.piece = captured
+
+                        if safe:
+                            return False
+
+        return True

@@ -1,7 +1,7 @@
 #This handels the main window of the application 
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QWidget, QGridLayout, QFrame, QLabel, QVBoxLayout, QMessageBox
 from board import Board
 
 class Square(QFrame):
@@ -89,6 +89,9 @@ class MainWindow(QMainWindow):
                 square.update_display()
 
     def on_square_clicked(self, row, col):
+        if self.board.game_over:
+            return
+        
         square = self.board.get_square(row, col)
 
         if self.board.selected_square is None:
@@ -134,3 +137,10 @@ class MainWindow(QMainWindow):
             )
 
             self.board.deselect_square()
+
+            if self.board.game_over:
+                winner = self.board.winner
+                msg = QMessageBox()
+                msg.setWindowTitle("Game Over")
+                msg.setText(f"Checkmate! {winner.capitalize()} wins!")
+                msg.exec_()
