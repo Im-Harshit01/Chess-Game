@@ -74,9 +74,11 @@ class Board:
         piece.has_moved = True
         self.switch_turn()
 
+        # Check if the newly active player is checkmated
+        
         if self.is_checkmate(self.turn):
             self.game_over = True
-            self.winner = piece.color
+            self.winner = piece.color  # The player who made the move wins
 
         return True
 
