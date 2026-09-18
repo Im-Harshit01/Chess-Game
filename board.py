@@ -9,6 +9,7 @@ class Board:
         self.turn = "white"
         self.game_over = False
         self.winner = None
+        self.pending_promotion = None  # Stores (row, col) if a pawn needs promotion
         
     def setup_pieces(self):
         # Place all pieces in their starting positions.
