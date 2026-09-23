@@ -211,14 +211,41 @@ class King(Piece):
         return "♔" if self.color == "white" else "♚"
 
     def is_valid_move(self, board, start_row, start_col, end_row, end_col):
+        # Normal one‑square moves
+        row_diff = abs(end_row - start_row)
+        col_diff = abs(end_col - start_col)
 
-        row_difference = abs(end_row - start_row)
-        col_difference = abs(end_col - start_col)
-
-        if start_row == end_row and start_col == end_col:
-            return False
+        if row_diff <= 1 and col_diff <= 1:
+            return True
         
-        if row_difference <= 1 and col_difference <= 1:
+        # Castling attempt
+        if start_row == end_row and col_diff == 2:
+
+            # 1. Rook side
+            rook_col = 7 if end_col > start_col else 0
+            rook_square = board.get_square(start_row, rook_col)
+
+            if not rook_square.piece:
+                return False
+            
+            rook = rook_square.piece
+            if not isinstance(rook, Rook) or rook.has_moved:
+                return False
+            
+            # 2. Path clear
+            step = 1 if end_col > start_col else -1
+            for c in range(start_col + step, end_col, step):
+                if board.get_square(start_row, c).piece:
+                    return False
+
+            # 3. King not in check and not passing through attacked squares
+            if board.is_in_check(self.color):
+                return False
+            for c in (start_col + step, end_col):
+                if board.is_square_attacked(start_row, c, opponent_color(self.color)):
+                    return False
+
             return True
 
         return False
+
