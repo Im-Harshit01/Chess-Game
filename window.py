@@ -88,55 +88,49 @@ class MainWindow(QMainWindow):
             for square in row_squares:
                 square.update_display()
 
+    def update_board_highlights(self):
+        # Update piece displays and background colors for all squares.
+        for r in range(8):
+            for c in range(8):
+                square = self.board.get_square(r, c)
+                square.update_display()
+                square.setStyleSheet(f"background-color: {square.color};")
+
+        # Highlight selected square if one exists
+        if self.board.selected_square is not None:
+            self.board.selected_square.setStyleSheet("background-color: #b8b6b6;")
+
+        # Highlight King in red if currently in check
+        if self.board.is_in_check(self.board.turn):
+            king_pos = self.board.find_king(self.board.turn)
+            if king_pos:
+                kr, kc = king_pos
+                self.board.get_square(kr, kc).setStyleSheet("background-color: #ff7777;")
+
     def on_square_clicked(self, row, col):
         if self.board.game_over:
             return
-        
+
         square = self.board.get_square(row, col)
 
         if self.board.selected_square is None:
-            if (square.piece is not None and 
-            square.piece.color == self.board.turn
-            ):
+            if (square.piece is not None and
+                    square.piece.color == self.board.turn):
                 self.board.select_square(row, col)
-                self.board.selected_square.setStyleSheet(
-                    "background-color: #b8b6b6;"
-                )
+                self.update_board_highlights()
             return
-        
+
         selected = self.board.selected_square
 
-        if (
-            square.piece is not None and
-            square.piece.color == selected.piece.color
-            ):
-            selected.setStyleSheet(
-                f"background-color: {selected.color};"
-            )
-
+        if (square.piece is not None and
+                square.piece.color == selected.piece.color):
             self.board.select_square(row, col)
-
-            self.board.selected_square.setStyleSheet(
-                "background-color: #b8b6b6;"
-            )
-
+            self.update_board_highlights()
             return
-        
-        if self.board.move_piece(
-            selected.row,
-            selected.col,
-            row,
-            col
-        ):
-            for row_squares in self.board.squares:
-                for square in row_squares:
-                    square.update_display()
-            
-            selected.setStyleSheet(
-                f"background-color: {selected.color};"
-            )
 
+        if self.board.move_piece(selected.row, selected.col, row, col):
             self.board.deselect_square()
+            self.update_board_highlights()
 
             if self.board.game_over:
                 winner = self.board.winner
