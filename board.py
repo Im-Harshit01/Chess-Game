@@ -99,26 +99,29 @@ class Board:
         else:
             self.turn = "white"
 
+    def find_king(self, color):
+            # Return (row, col) tuple of the King of the specified color, or None if not found.
+            for row in range(8):
+                for col in range(8):
+                    piece = self.get_square(row, col).piece
+                    if piece is not None and isinstance(piece, King) and piece.color == color:
+                        return (row, col)
+            return None
+
     def is_in_check(self, color):
         # Return True if the given color is in check.
-        king_square = None
+        king_pos = self.find_king(color)
+        if king_pos is None:
+            return False
 
-        for row in self.squares:
-            for square in row:
-                piece = square.piece
-                if piece is not None and isinstance(piece, King) and piece.color == color:
-                    king_square = square
-                    break
-
-            if king_square is not None:
-                    break
+        king_row, king_col = king_pos
 
         for row in range(8):
             for col in range(8):
                 square = self.get_square(row, col)
                 piece = square.piece
                 if piece is not None and piece.color != color:
-                    if piece.is_valid_move(self, row, col, king_square.row, king_square.col):
+                    if piece.is_valid_move(self, row, col, king_row, king_col):
                         return True        
         return False
 
